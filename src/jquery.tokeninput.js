@@ -207,7 +207,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                         }
                     } else {
                         var dropdown_item = null;
-                        
+
                         if(settings.allowCustomEntry == true) {
 
                             if(event.keyCode === KEY.DOWN) {
@@ -231,25 +231,25 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                                     dropdown_item = $(dropdown).find('li:last-child');
                                 }
                             }
-                            
+
                             if(dropdown_item != null) {
                                 select_dropdown_item(dropdown_item);
                             }
-                            
+
                         } else {
-                        
+
                             if(event.keyCode === KEY.DOWN) {
                                 dropdown_item = $(selected_dropdown_item).next();
                             } else if(event.keyCode === KEY.UP) {
                                 dropdown_item = $(selected_dropdown_item).prev();
                             }
-                            
+
                             if(dropdown_item && dropdown_item.length) {
                                 select_dropdown_item(dropdown_item);
                             }
-                        
+
                         }
-                        
+
                         if(event.keyCode === KEY.LEFT || event.keyCode === KEY.RIGHT) {
                             // we need to allow caret moving here
                             return true;
@@ -287,28 +287,28 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                             select_token($(next_token.get(0)));
                         }
                     }
-                
+
                     break;
-                
+
                 case KEY.TAB:
                 case KEY.ENTER:
                 case KEY.NUMPAD_ENTER:
                 case KEY.COMMA:
-                    
+
                     if(event.keyCode == KEY.TAB && !$(input_box).val().length) {
                         hide_dropdown();
                         $(this).blur();
                         return true;
                     }
-                
+
                     if(selected_dropdown_item) {
                         add_token($(selected_dropdown_item));
                     }
-                    
+
                     if(settings.allowCustomEntry == true && $.trim($(input_box).val()) != '') {
                         add_token($(input_box).val());
                     }
-                    
+
                     return false;
                     break;
 
@@ -324,7 +324,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                     break;
             }
         });
-        
+
     var unique_counter = 0;
     function get_unique_id() {
         unique_counter++;
@@ -405,21 +405,21 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             letterSpacing: input_box.css("letterSpacing"),
             whiteSpace: "nowrap"
         });
-        
-    // True during dragging process    
+
+    // True during dragging process
     var dragging = false;
-    
+
     var dragTimeout;
-    
+
     // the dragged Token
     var dragToken;
-    
+
     // the destination Token
     var dragDestination;
 
     // Pre-populate list if items exist
     hidden_input.val("");
-    
+
     var li_data = settings.prePopulate || hidden_input.data("pre");
     if(settings.processPrePopulate && $.isFunction(settings.onResult)) {
         li_data = settings.onResult.call(hidden_input, li_data);
@@ -432,7 +432,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                 return false;
             }
         });
-        
+
         if(li_data.length >= settings.tokenLimit && settings.tokenLimit != null) {
             input_box.hide();
             hide_dropdown();
@@ -444,7 +444,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
     //
     // Private functions
     //
-    
+
 
     function resize_input() {
         if(input_val === (input_val = input_box.val())) {return;}
@@ -464,9 +464,9 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 
     // Inner function to a token to the list
     function insert_token(object) {
-        
+
         var uniqueid = get_unique_id();
-        
+
         var token_name;
         if(settings.parseName) {
             token_name = settings.parseName(object);
@@ -478,7 +478,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             .addClass(settings.classes.token)
             .insertBefore(input_token)
             .attr('data-uniqueid', uniqueid);
-          
+
          if(settings.makeSortable) {
             addDragFunctionality(this_token);
          };
@@ -497,10 +497,10 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
         $.data(this_token.get(0), "tokeninput", token_data);
 
         // Save this token for duplicate checking
-        
+
         saved_tokens[uniqueid] = token_data;
         update_hidden_input();
-        
+
         selected_token_index++;
 
         // Update the hidden input
@@ -512,22 +512,22 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 
         return this_token;
     }
-    
-    
+
+
 
     // Add a token to the token list based on user input
     function add_token (item) {
-        
+
         if(typeof(item) === "string") {
             var li_data = {name: item};
         } else {
             var li_data = $.data(item.get(0), "tokeninput");
         }
-        
+
         if(!li_data) {
             return false;
         }
-        
+
         var callback = settings.onAdd;
 
         // See if the token already exists and select it if we don't want duplicates
@@ -558,7 +558,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 
         // Insert the new tokens
         insert_token(li_data);
-        
+
         // Clear input box
         input_box.val("");
 
@@ -578,69 +578,69 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             callback.call(hidden_input,li_data);
         }
     }
-    
-    
+
+
     //
     //  Drag and Drop  Functionality
     //
     function addDragFunctionality(token) {
         token.bind('mousedown', function() {
             var token = $(this);
-            
+
             dragToken = token;
-            
+
             dragTimeout = window.setTimeout(function(e) {
-                
+
                 if(selected_token == token) {
                     return;
                 }
-                
+
                 if(selected_token) {
                     deselect_token($(selected_token), POSITION.END);
                 }
-                
+
                 select_token(token);
-                
+
                 var position = $(token).position();
-                
+
                 $(token).clone().appendTo('body').addClass(settings.classes.draggedClone).css({'top': position.top, 'left': position.left});
                 token.addClass(settings.classes.draggedToken);
-                
+
                 dragging = true;
-                
+
             }, 200);
-            
+
             $(document).one('mouseup', function() {
-            
+
                 window.clearTimeout(dragTimeout);
-            
+
                 if(dragging != true) {
                     return;
                 }
-                
+
                 dragging = false;
-                
+
                 $('li.'+settings.classes.draggedClone).remove();
                 $('li.'+settings.classes.draggedToken).removeClass(settings.classes.draggedToken);
-            
+
                 if(selected_token) {
                     deselect_token($(selected_token), POSITION.END);
                 }
-                
+
                 if(dragDestination) {
                     move_token(token, dragDestination);
                     reindex_results();
                 }
             });
-            
+
             return false;
         })
         .bind('mouseover', function() {
-            
+
             if(!dragging) return;
-            
+
             dragDestination = $(this);
-            
+
             if(is_after(dragToken, dragDestination)) {
                 dragDestination.addClass(settings.classes.insertAfter);
             } else {
@@ -648,9 +648,9 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             }
         })
         .bind('mouseout', function() {
-            
+
             if(!dragging) return;
-            
+
             $(this).removeClass(settings.classes.insertBefore);
             $(this).removeClass(settings.classes.insertAfter);
         }).
@@ -658,15 +658,15 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             $(this).removeClass(settings.classes.insertBefore);
             $(this).removeClass(settings.classes.insertAfter);
         });
-        
+
         $('body').mousemove(function(e) {
             if(!dragging) return;
-            
+
             $('li.'+settings.classes.draggedClone).css({'top': e.pageY, 'left': e.pageX});
         });
     }
-    
-    
+
+
     function move_token(token, destinationToken) {
         if(!destinationToken || token.get(0) == destinationToken.get(0)) return;
 
@@ -676,16 +676,16 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             token.insertBefore(destinationToken);
         }
     }
-    
+
     function is_after(first, last) {
         index_tokens();
         first = $.data(first.get(0), "tokeninput");
         last = $.data(last.get(0), "tokeninput");
         if(!first || !last) return;
-        return last.index > first.index 
+        return last.index > first.index
     }
-    
-    
+
+
     function index_tokens() {
         var i = 0;
         token_list.find('li').each(function() {
@@ -696,24 +696,24 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             i++;
         });
     }
-    
+
     function reindex_results() {
         var ids = [], tokens = [];
         token_list.find('li').each(function() {
             var data = $.data(this, "tokeninput");
-            if(data) {  
-                ids.push(data.id); 
+            if(data) {
+                ids.push(data.id);
                 tokens.push(data);
             };
         });
         saved_tokens = tokens;
         update_hidden_input();
     }
-    
-    
+
+
     // end Drag and Drop Functionality
-    
-    
+
+
 
     // Select a token in the token list
     function select_token(token) {
@@ -730,9 +730,9 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
     // Deselect a token in the token list
     function deselect_token (token, position) {
         token.removeClass(settings.classes.selectedToken);
- 
+
         selected_token = null;
-        
+
         input_box.css('color', '');
 
         if(position === POSITION.BEFORE) {
@@ -773,9 +773,9 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 
         var index = token.prevAll().length;
         if(index > selected_token_index) index--;
-        
+
         var uniqueid = $(token).attr('data-uniqueid');
-        
+
         // Delete the token
         token.remove();
         selected_token = null;
@@ -786,7 +786,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
         // Remove this token from the saved list
         delete saved_tokens[uniqueid];
         update_hidden_input();
-        
+
         if(index < selected_token_index) selected_token_index--;
 
         token_count -= 1;
@@ -803,7 +803,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             callback.call(hidden_input,token_data);
         }
     }
-    
+
     function format_tokens(tokens) {
         var token_ids = [];
         var regex = new RegExp(settings.tokenQuote, "gi");
@@ -817,7 +817,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 
         return token_ids.join(settings.tokenDelimiter);
     }
-    
+
 	// Update the hidden input value
     function update_hidden_input() {
         var formatter = settings.tokensFormatter || format_tokens;
@@ -855,7 +855,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             show_dropdown();
         }
     }
-    
+
     // Highlight the query part of the search term
     // from http://www.alistapart.com/articles/accent-folding-for-auto-complete/
     function highlight_term(str, q) {
@@ -913,7 +913,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                 } else {
                     token_name = value.name;
                 }
-                
+
                 var this_li = $("<li>" + highlight_term(escapeHTML(token_name), query) + "</li>")
                                   .appendTo(dropdown_ul);
 
@@ -922,7 +922,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                 } else {
                     this_li.addClass(settings.classes.dropdownItem2);
                 }
-                
+
                 if(settings.allowCustomEntry == false) {
                     if(index === 0) {
                         select_dropdown_item(this_li);
@@ -966,19 +966,19 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
         item.removeClass(settings.classes.selectedDropdownItem);
         selected_dropdown_item = null;
     }
-    
-    
+
+
     function escapeHTML(text) {
       if(!settings.escapeHTML) return text;
       return $("<p></p>").text(text).html();
     }
-    
+
 
     // Do a search and show the "searching" dropdown if the input is longer
     // than settings.minChars
     function do_search() {
         var query = input_box.val();
-        
+
         if(settings.tokenLimit !== null && token_count >= settings.tokenLimit) {
             return false;
         }
@@ -1074,12 +1074,12 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 // from http://www.alistapart.com/articles/accent-folding-for-auto-complete/
 String.prototype.removeDiacritics = function () {
 
-    var str = this;    
-    
+    var str = this;
+
     if (!str) {
         return '';
     }
-    
+
     var accent_map = {
         'ẚ':'a', 'Á':'a', 'á':'a', 'À':'a', 'à':'a', 'Ă':'a', 'ă':'a', 'Ắ':'a', 'ắ':'a', 'Ằ':'a', 'ằ':'a', 'Ẵ':'a', 'ẵ':'a', 'Ẳ':'a', 'ẳ':'a', 'Â':'a', 'â':'a', 'Ấ':'a', 'ấ':'a', 'Ầ':'a', 'ầ':'a', 'Ẫ':'a', 'ẫ':'a', 'Ẩ':'a', 'ẩ':'a', 'Ǎ':'a', 'ǎ':'a', 'Å':'a', 'å':'a', 'Ǻ':'a', 'ǻ':'a', 'Ä':'a', 'ä':'a', 'Ǟ':'a', 'ǟ':'a', 'Ã':'a', 'ã':'a', 'Ȧ':'a', 'ȧ':'a', 'Ǡ':'a', 'ǡ':'a', 'Ą':'a', 'ą':'a', 'Ā':'a', 'ā':'a', 'Ả':'a', 'ả':'a', 'Ȁ':'a', 'ȁ':'a', 'Ȃ':'a', 'ȃ':'a', 'Ạ':'a', 'ạ':'a', 'Ặ':'a', 'ặ':'a', 'Ậ':'a', 'ậ':'a', 'Ḁ':'a', 'ḁ':'a', 'Ⱥ':'a', 'ⱥ':'a', 'Ǽ':'a', 'ǽ':'a', 'Ǣ':'a', 'ǣ':'a',
         'Ḃ':'b', 'ḃ':'b', 'Ḅ':'b', 'ḅ':'b', 'Ḇ':'b', 'ḇ':'b', 'Ƀ':'b', 'ƀ':'b', 'ᵬ':'b', 'Ɓ':'b', 'ɓ':'b', 'Ƃ':'b', 'ƃ':'b',
@@ -1110,13 +1110,13 @@ String.prototype.removeDiacritics = function () {
         // Roman fullwidth ascii equivalents: 0xff00 to 0xff5e
         '２':'2', '６':'6', 'Ｂ':'B', 'Ｆ':'F', 'Ｊ':'J', 'Ｎ':'N', 'Ｒ':'R', 'Ｖ':'V', 'Ｚ':'Z', 'ｂ':'b', 'ｆ':'f', 'ｊ':'j', 'ｎ':'n', 'ｒ':'r', 'ｖ':'v', 'ｚ':'z', '１':'1', '５':'5', '９':'9', 'Ａ':'A', 'Ｅ':'E', 'Ｉ':'I', 'Ｍ':'M', 'Ｑ':'Q', 'Ｕ':'U', 'Ｙ':'Y', 'ａ':'a', 'ｅ':'e', 'ｉ':'i', 'ｍ':'m', 'ｑ':'q', 'ｕ':'u', 'ｙ':'y', '０':'0', '４':'4', '８':'8', 'Ｄ':'D', 'Ｈ':'H', 'Ｌ':'L', 'Ｐ':'P', 'Ｔ':'T', 'Ｘ':'X', 'ｄ':'d', 'ｈ':'h', 'ｌ':'l', 'ｐ':'p', 'ｔ':'t', 'ｘ':'x', '３':'3', '７':'7', 'Ｃ':'C', 'Ｇ':'G', 'Ｋ':'K', 'Ｏ':'O', 'Ｓ':'S', 'Ｗ':'W', 'ｃ':'c', 'ｇ':'g', 'ｋ':'k', 'ｏ':'o', 'ｓ':'s', 'ｗ':'w'
     };
-    
+
     var ret = '';
     for (var i = 0; i < str.length; i++) {
         ret += accent_map[str.charAt(i)] || str.charAt(i);
     }
     return ret;
-    
+
 };
 
 // Really basic cache for the results
