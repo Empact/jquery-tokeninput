@@ -859,8 +859,8 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
     // Highlight the query part of the search term
     // from http://www.alistapart.com/articles/accent-folding-for-auto-complete/
     function highlight_term(str, q) {
-        var str_folded = str.toString().removeDiacritics().toLowerCase().replace(/[<>]+/g, '');
-        var q_folded = q.toString().removeDiacritics().toLowerCase().replace(/[<>]+/g, '');
+        var str_folded = $.TokenList.cleanse(str);
+        var q_folded = $.TokenList.cleanse(q);
 
         // create an intermediary string with hilite hints
         // example: fulani<lo> <lo>pez
@@ -1053,7 +1053,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                 var results = $.grep(settings.local_data, function (row) {
                     var founded = false;
                     $(settings.searchColumns).each(function(i, item) {
-                        if(row[item].toString().toLowerCase().removeDiacritics().indexOf(query.toString().toLowerCase().removeDiacritics()) > -1) {
+                        if($.TokenList.cleanse(row[item]).indexOf($.TokenList.cleanse(query)) > -1) {
                             founded = true;
                         }
                     });
@@ -1119,34 +1119,40 @@ String.prototype.removeDiacritics = function () {
 
 };
 
-// Really basic cache for the results
-$.TokenList.Cache = function (options) {
-    var settings = $.extend({
-        max_size: 500
-    }, options);
+$.extend($.TokenList, {
+  // Really basic cache for the results
+  Cache: function (options) {
+      var settings = $.extend({
+          max_size: 500
+      }, options);
 
-    var data = {};
-    var size = 0;
+      var data = {};
+      var size = 0;
 
-    var flush = function () {
-        data = {};
-        size = 0;
-    };
+      var flush = function () {
+          data = {};
+          size = 0;
+      };
 
-    this.add = function (query, results) {
-        if(size > settings.max_size) {
-            flush();
-        }
+      this.add = function (query, results) {
+          if(size > settings.max_size) {
+              flush();
+          }
 
-        if(!data[query]) {
-            size += 1;
-        }
+          if(!data[query]) {
+              size += 1;
+          }
 
-        data[query] = results;
-    };
+          data[query] = results;
+      };
 
-    this.get = function (query) {
-        return data[query];
-    };
-};
+      this.get = function (query) {
+          return data[query];
+      };
+  },
+  cleanse: function(str) {
+    return str.toString().removeDiacritics().toLowerCase().replace(/[<>]+/g, '');
+  }
+})
+
 }(jQuery));
