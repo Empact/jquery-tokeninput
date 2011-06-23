@@ -300,11 +300,11 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                     }
 
                     if(selected_dropdown_item) {
-                        add_token($(selected_dropdown_item));
+                        hidden_input.trigger('tokeninput:add', $(selected_dropdown_item));
                     }
 
                     if(settings.allowCustomEntry == true && $.trim($(input_box).val()) != '') {
-                        add_token($(input_box).val());
+                        hidden_input.trigger('tokeninput:add', $(input_box).val());
                     }
 
                     return false;
@@ -330,15 +330,14 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
     }
 
     // Keep a reference to the original input box
-    var hidden_input = $(input)
-                           .hide()
-                           .val("")
-                           .focus(function () {
-                               input_box.focus();
-                           })
-                           .blur(function () {
-                               input_box.blur();
-                           });
+    var hidden_input = $(input).hide().val("")
+        .focus(function () {
+           input_box.focus();
+        })
+        .blur(function () {
+           input_box.blur();
+        })
+        .bind('tokeninput:add', add_token);
 
     // Keep a reference to the selected token and dropdown item
     var selected_token = null;
@@ -499,12 +498,12 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 
 
     // Add a token to the token list based on user input
-    function add_token (item) {
+    function add_token (event, item) {
 
         if(typeof(item) === "string") {
             var li_data = {name: item};
         } else {
-            var li_data = $.data(item.get(0), "tokeninput");
+            var li_data = $.data($(item).get(0), "tokeninput");
         }
 
         if(!li_data) {
@@ -745,7 +744,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                     select_dropdown_item($(event.target).closest("li"));
                 })
                 .mousedown(function (event) {
-                    add_token($(event.target).closest("li"));
+                    hidden_input.trigger('tokeninput:add', $(event.target).closest("li"));
                     return false;
                 })
                 .hide();
