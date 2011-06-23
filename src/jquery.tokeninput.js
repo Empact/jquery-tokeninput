@@ -48,8 +48,6 @@ var DEFAULT_CLASSES = {
     tokenDelete: "token-input-delete-token",
     selectedToken: "token-input-selected-token",
     highlightedToken: "token-input-highlighted-token",
-    draggedToken: "token-input-dragged-token",
-    draggedClone: "token-input-dragged-clone",
     dropdown: "token-input-dropdown",
     dropdownItem: "token-input-dropdown-item",
     dropdownItem2: "token-input-dropdown-item2",
@@ -406,17 +404,6 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             whiteSpace: "nowrap"
         });
 
-    // True during dragging process
-    var dragging = false;
-
-    var dragTimeout;
-
-    // the dragged Token
-    var dragToken;
-
-    // the destination Token
-    var dragDestination;
-
     // Pre-populate list if items exist
     hidden_input.val("");
 
@@ -478,10 +465,6 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             .addClass(settings.classes.token)
             .insertBefore(input_token)
             .attr('data-uniqueid', uniqueid);
-
-         if(settings.makeSortable) {
-            addDragFunctionality(this_token);
-         };
 
         // The 'delete token' button
         $("<span>" + settings.deleteText + "</span>")
@@ -578,142 +561,6 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
             callback.call(hidden_input,li_data);
         }
     }
-
-
-    //
-    //  Drag and Drop  Functionality
-    //
-    function addDragFunctionality(token) {
-        token.bind('mousedown', function() {
-            var token = $(this);
-
-            dragToken = token;
-
-            dragTimeout = window.setTimeout(function(e) {
-
-                if(selected_token == token) {
-                    return;
-                }
-
-                if(selected_token) {
-                    deselect_token($(selected_token), POSITION.END);
-                }
-
-                select_token(token);
-
-                var position = $(token).position();
-
-                $(token).clone().appendTo('body').addClass(settings.classes.draggedClone).css({'top': position.top, 'left': position.left});
-                token.addClass(settings.classes.draggedToken);
-
-                dragging = true;
-
-            }, 200);
-
-            $(document).one('mouseup', function() {
-
-                window.clearTimeout(dragTimeout);
-
-                if(dragging != true) {
-                    return;
-                }
-
-                dragging = false;
-
-                $('li.'+settings.classes.draggedClone).remove();
-                $('li.'+settings.classes.draggedToken).removeClass(settings.classes.draggedToken);
-
-                if(selected_token) {
-                    deselect_token($(selected_token), POSITION.END);
-                }
-
-                if(dragDestination) {
-                    move_token(token, dragDestination);
-                    reindex_results();
-                }
-            });
-
-            return false;
-        })
-        .bind('mouseover', function() {
-
-            if(!dragging) return;
-
-            dragDestination = $(this);
-
-            if(is_after(dragToken, dragDestination)) {
-                dragDestination.addClass(settings.classes.insertAfter);
-            } else {
-                dragDestination.addClass(settings.classes.insertBefore);
-            }
-        })
-        .bind('mouseout', function() {
-
-            if(!dragging) return;
-
-            $(this).removeClass(settings.classes.insertBefore);
-            $(this).removeClass(settings.classes.insertAfter);
-        }).
-        bind('mouseup', function(){
-            $(this).removeClass(settings.classes.insertBefore);
-            $(this).removeClass(settings.classes.insertAfter);
-        });
-
-        $('body').mousemove(function(e) {
-            if(!dragging) return;
-
-            $('li.'+settings.classes.draggedClone).css({'top': e.pageY, 'left': e.pageX});
-        });
-    }
-
-
-    function move_token(token, destinationToken) {
-        if(!destinationToken || token.get(0) == destinationToken.get(0)) return;
-
-        if(is_after(token, destinationToken)) {
-            token.insertAfter(destinationToken);
-        } else {
-            token.insertBefore(destinationToken);
-        }
-    }
-
-    function is_after(first, last) {
-        index_tokens();
-        first = $.data(first.get(0), "tokeninput");
-        last = $.data(last.get(0), "tokeninput");
-        if(!first || !last) return;
-        return last.index > first.index
-    }
-
-
-    function index_tokens() {
-        var i = 0;
-        token_list.find('li').each(function() {
-            var data = $.data(this, "tokeninput");
-            if(data) {
-                data.index = i;
-            }
-            i++;
-        });
-    }
-
-    function reindex_results() {
-        var ids = [], tokens = [];
-        token_list.find('li').each(function() {
-            var data = $.data(this, "tokeninput");
-            if(data) {
-                ids.push(data.id);
-                tokens.push(data);
-            };
-        });
-        saved_tokens = tokens;
-        update_hidden_input();
-    }
-
-
-    // end Drag and Drop Functionality
-
-
 
     // Select a token in the token list
     function select_token(token) {
