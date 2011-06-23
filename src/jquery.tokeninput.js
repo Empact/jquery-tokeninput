@@ -653,7 +653,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
 
     function quote_token(token) {
         var regex = new RegExp(settings.tokenQuote, "gi")
-        return (settings.tokenQuote + value.name.replace(regex, settings.tokenQuoteEscaped) + settings.tokenQuote)
+        return (settings.tokenQuote + token.replace(regex, settings.tokenQuoteEscaped) + settings.tokenQuote)
     }
 
     function format_tokens(tokens) {
