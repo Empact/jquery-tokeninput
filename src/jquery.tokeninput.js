@@ -1070,6 +1070,43 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
     }
 };
 
+
+$.extend($.TokenList, {
+  // Really basic cache for the results
+  Cache: function (options) {
+      var settings = $.extend({
+          max_size: 500
+      }, options);
+
+      var data = {};
+      var size = 0;
+
+      var flush = function () {
+          data = {};
+          size = 0;
+      };
+
+      this.add = function (query, results) {
+          if(size > settings.max_size) {
+              flush();
+          }
+
+          if(!data[query]) {
+              size += 1;
+          }
+
+          data[query] = results;
+      };
+
+      this.get = function (query) {
+          return data[query];
+      };
+  },
+  cleanse: function(str) {
+    return str.toString().removeDiacritics().toLowerCase().replace(/[<>]+/g, '');
+  }
+})
+
 // Remove Diacritics
 // from http://www.alistapart.com/articles/accent-folding-for-auto-complete/
 String.prototype.removeDiacritics = function () {
@@ -1118,41 +1155,5 @@ String.prototype.removeDiacritics = function () {
     return ret;
 
 };
-
-$.extend($.TokenList, {
-  // Really basic cache for the results
-  Cache: function (options) {
-      var settings = $.extend({
-          max_size: 500
-      }, options);
-
-      var data = {};
-      var size = 0;
-
-      var flush = function () {
-          data = {};
-          size = 0;
-      };
-
-      this.add = function (query, results) {
-          if(size > settings.max_size) {
-              flush();
-          }
-
-          if(!data[query]) {
-              size += 1;
-          }
-
-          data[query] = results;
-      };
-
-      this.get = function (query) {
-          return data[query];
-      };
-  },
-  cleanse: function(str) {
-    return str.toString().removeDiacritics().toLowerCase().replace(/[<>]+/g, '');
-  }
-})
 
 }(jQuery));
