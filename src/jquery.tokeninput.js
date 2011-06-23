@@ -116,8 +116,8 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
                 settings.crossDomain = (location.href.split(/\/+/g)[1] !== settings.url.split(/\/+/g)[1]);
             }
         }
-	} else if(typeof(url_or_data_or_function) === "function") {
-		settings.sourceFunction = url_or_data_or_function;
+    } else if(typeof(url_or_data_or_function) === "function") {
+        settings.sourceFunction = url_or_data_or_function;
     } else if(typeof(url_or_data_or_function) === "object") {
         // Set the local data to search through
         settings.local_data = url_or_data_or_function;
@@ -818,7 +818,7 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
         return token_ids.join(settings.tokenDelimiter);
     }
 
-	// Update the hidden input value
+    // Update the hidden input value
     function update_hidden_input() {
         var formatter = settings.tokensFormatter || format_tokens;
         hidden_input.val(formatter(saved_tokens));
