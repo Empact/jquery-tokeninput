@@ -804,18 +804,15 @@ $.TokenList = function (input, url_or_data_or_function, settings) {
         }
     }
 
+    function quote_token(token) {
+        var regex = new RegExp(settings.tokenQuote, "gi")
+        return (settings.tokenQuote + value.name.replace(regex, settings.tokenQuoteEscaped) + settings.tokenQuote)
+    }
+
     function format_tokens(tokens) {
-        var token_ids = [];
-        var regex = new RegExp(settings.tokenQuote, "gi");
-
-        $.each(tokens, function (index, value) {
-            token_ids.push(value.id
-                ? value.id
-                : settings.tokenQuote + value.name.replace(regex, settings.tokenQuoteEscaped) + settings.tokenQuote
-                );
-        });
-
-        return token_ids.join(settings.tokenDelimiter);
+        return $.map(tokens, function (value) {
+            return value.id || quote_token(value.name);
+        }).join(settings.tokenDelimiter);
     }
 
     // Update the hidden input value
