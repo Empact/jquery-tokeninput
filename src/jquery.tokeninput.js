@@ -1107,10 +1107,7 @@ $.extend($.TokenList, {
 // Remove Diacritics
 // from http://www.alistapart.com/articles/accent-folding-for-auto-complete/
 String.prototype.removeDiacritics = function () {
-
-    var str = this;
-
-    if (!str) {
+    if (!this) {
         return '';
     }
 
@@ -1145,12 +1142,9 @@ String.prototype.removeDiacritics = function () {
         '２':'2', '６':'6', 'Ｂ':'B', 'Ｆ':'F', 'Ｊ':'J', 'Ｎ':'N', 'Ｒ':'R', 'Ｖ':'V', 'Ｚ':'Z', 'ｂ':'b', 'ｆ':'f', 'ｊ':'j', 'ｎ':'n', 'ｒ':'r', 'ｖ':'v', 'ｚ':'z', '１':'1', '５':'5', '９':'9', 'Ａ':'A', 'Ｅ':'E', 'Ｉ':'I', 'Ｍ':'M', 'Ｑ':'Q', 'Ｕ':'U', 'Ｙ':'Y', 'ａ':'a', 'ｅ':'e', 'ｉ':'i', 'ｍ':'m', 'ｑ':'q', 'ｕ':'u', 'ｙ':'y', '０':'0', '４':'4', '８':'8', 'Ｄ':'D', 'Ｈ':'H', 'Ｌ':'L', 'Ｐ':'P', 'Ｔ':'T', 'Ｘ':'X', 'ｄ':'d', 'ｈ':'h', 'ｌ':'l', 'ｐ':'p', 'ｔ':'t', 'ｘ':'x', '３':'3', '７':'7', 'Ｃ':'C', 'Ｇ':'G', 'Ｋ':'K', 'Ｏ':'O', 'Ｓ':'S', 'Ｗ':'W', 'ｃ':'c', 'ｇ':'g', 'ｋ':'k', 'ｏ':'o', 'ｓ':'s', 'ｗ':'w'
     };
 
-    var ret = '';
-    for (var i = 0; i < str.length; i++) {
-        ret += accent_map[str.charAt(i)] || str.charAt(i);
-    }
-    return ret;
-
+    return $.map(this, function(char) {
+      return accent_map[char] || char;
+    }).join();
 };
 
 }(jQuery));
